@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createReader } from '@keystatic/core/reader';
 import  config from '../../../../keystatic.config.js';
+export const dynamic = 'force-dynamic';
 
 const reader = createReader(process.cwd(), config);
 
