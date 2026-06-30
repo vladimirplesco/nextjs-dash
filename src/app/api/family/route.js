@@ -3,10 +3,11 @@ import { createReader } from '@keystatic/core/reader';
 import  config from '../../../../keystatic.config.js';
 export const dynamic = 'force-dynamic';
 
-const reader = createReader(process.cwd(), config);
+// const reader = createReader(process.cwd(), config);
 
 export async function GET() {
   try {
+    const reader = createReader(process.cwd(), config);
     const entries = await reader.collections.people.all();
 
     return NextResponse.json({
