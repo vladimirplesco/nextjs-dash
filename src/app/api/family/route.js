@@ -7,6 +7,7 @@ export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
+    console.log('cwd:', process.cwd());
     const reader = createReader(process.cwd(), config);
     const entries = await reader.collections.people.all();
 
