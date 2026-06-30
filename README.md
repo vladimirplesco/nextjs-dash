@@ -43,3 +43,14 @@ npm run dev
 админ панель здесь
 /keystatic
 
+в next.config.mjs пришлось отключить output
+const nextConfig = {
+  /* config options here */
+  // output: 'export',
+  // allowedDevOrigins: ['192.168.0.14'],
+};
+
+export default nextConfig;
+
+с ним keystatic не работает!!!
+
