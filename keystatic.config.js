@@ -27,17 +27,17 @@ export default config({
         // id: fields.text({
         //   label: 'ID',
         // }),
-        name: fields.slug({
-          label: 'Name',
-          validation: {
-            isRequired: true,
-          },
-        }),
         // name: fields.slug({
-        //   name: {
-        //     label: 'Name',
+        //   label: 'Name',
+        //   validation: {
+        //     isRequired: true,
         //   },
         // }),
+        name: fields.slug({
+          name: {
+            label: 'Name',
+          },
+        }),
         birthDate: fields.text({
           label: 'Birth date',
         }),
