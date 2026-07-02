@@ -27,7 +27,8 @@ export async function GET() {
       // success: true,
       // entries,
       children: entries.map(({ entry }) => ({
-        id: entry.id,
+        // id: entry.id,
+        id: Number(slug),
         name: entry.name,
         date: entry.birthDate,
       })),
