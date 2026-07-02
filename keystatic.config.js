@@ -24,20 +24,20 @@ export default config({
         //     label: 'Имя файла'
         //   },
         // }),
-        id: fields.text({
-          label: 'ID',
-        }),
-        // name: fields.text({
-        //   label: 'Name',
-        //   validation: {
-        //     isRequired: true,
-        //   },
+        // id: fields.text({
+        //   label: 'ID',
         // }),
-        name: fields.slug({
-          name: {
-            label: 'Name',
+        name: fields.text({
+          label: 'Name',
+          validation: {
+            isRequired: true,
           },
         }),
+        // name: fields.slug({
+        //   name: {
+        //     label: 'Name',
+        //   },
+        // }),
         birthDate: fields.text({
           label: 'Birth date',
         }),
