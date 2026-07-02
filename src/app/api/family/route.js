@@ -2,16 +2,26 @@ import { NextResponse } from 'next/server'
 import { createReader } from '@keystatic/core/reader';
 import  config from '../../../../keystatic.config.js';
 export const dynamic = 'force-dynamic';
+import fs from 'node:fs';
+import path from 'node:path';
 
 // const reader = createReader(process.cwd(), config);
 
 export async function GET() {
   try {
+    const dir = path.join(process.cwd(), 'content', 'people');
+
+    const files = fs.existsSync(dir)
+      ? fs.readdirSync(dir)
+      : [];
+
     console.log('cwd:', process.cwd());
     const reader = createReader(process.cwd(), config);
     const entries = await reader.collections.people.all();
 
     return NextResponse.json({
+      files,
+      entriesCount: entries.length,
       // success: true,
       // entries,
       children: entries.map(({ entry }) => ({
