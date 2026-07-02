@@ -27,7 +27,7 @@ export default config({
         // id: fields.text({
         //   label: 'ID',
         // }),
-        name: fields.text({
+        name: fields.slug({
           label: 'Name',
           validation: {
             isRequired: true,
