@@ -16,28 +16,28 @@ export default config({
     people: collection({
       label: 'People',
       path: 'content/people/*',
-      // slugField: 'id',
-      slugField: 'name',
+      slugField: 'id',
+      // slugField: 'name',
       schema: {
         // fileName: fields.slug({
         //   name: {
         //     label: 'Имя файла'
         //   },
         // }),
-        // id: fields.text({
-        //   label: 'ID',
-        // }),
-        // name: fields.slug({
-        //   label: 'Name',
-        //   validation: {
-        //     isRequired: true,
-        //   },
-        // }),
-        name: fields.slug({
-          name: {
-            label: 'Name',
+        id: fields.text({
+          label: 'ID',
+        }),
+        name: fields.text({
+          label: 'Name',
+          validation: {
+            isRequired: true,
           },
         }),
+        // name: fields.slug({
+        //   name: {
+        //     label: 'Name',
+        //   },
+        // }),
         birthDate: fields.text({
           label: 'Birth date',
         }),
