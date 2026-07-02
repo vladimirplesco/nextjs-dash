@@ -23,6 +23,7 @@ export async function GET() {
     return NextResponse.json({
       files,
       entriesCount: entries.length,
+      entries,
       // success: true,
       // entries,
       children: entries.map(({ entry }) => ({
