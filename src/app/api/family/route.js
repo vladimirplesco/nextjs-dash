@@ -26,7 +26,7 @@ export async function GET() {
       entries,
       // success: true,
       // entries,
-      children: entries.map(({ entry }) => ({
+      children: entries.map(({ slug, entry }) => ({
         // id: entry.id,
         id: Number(slug),
         name: entry.name,
