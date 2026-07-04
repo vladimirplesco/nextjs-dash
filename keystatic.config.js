@@ -4,7 +4,9 @@ import { config, collection, fields } from '@keystatic/core';
 
 export default config({
   storage: {
+    // for local
     // kind: 'local',
+    // for Github
     kind: 'github',
     repo: {
       owner: 'vladimirplesco',
