@@ -1,0 +1,34 @@
+.navigation {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 14px 24px;
+
+    background: #f7f7f7;
+    border-bottom: 1px solid #ddd;
+}
+
+.navigation__logo {
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.navigation__menu {
+    display: flex;
+    gap: 24px;
+
+    list-style: none;
+
+    margin: 0;
+    padding: 0;
+}
+
+.navigation__menu a {
+    text-decoration: none;
+    color: #222;
+}
+
+.navigation__menu a:hover {
+    text-decoration: underline;
+}

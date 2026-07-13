@@ -1,5 +1,6 @@
 import { Manrope } from "next/font/google";
 import "./globals.css";
+import { Navigation } from "../ui/navigation/navigation";
 
 const manrope = Manrope({
   subsets: ["latin", "cyrillic"],
@@ -16,7 +17,13 @@ export default function RootLayout({ children }) {
       lang="ru"
       className={manrope.className}
     >
-      <body className="p-4">{children}</body>
+      <body>
+        <Navigation />
+
+        <main className="p-4">
+          {children}
+        </main>
+      </body>
     </html>
   );
 }

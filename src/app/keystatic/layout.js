@@ -5,3 +5,14 @@ export default function Layout() {
     <KeystaticApp />
   );
 }
+// import { Navigation } from "../../ui/navigation/navigation";
+
+// export default function Layout({ children }) {
+//   return (
+//     <>
+//       <Navigation />
+
+//       {children}
+//     </>
+//   );
+// }
