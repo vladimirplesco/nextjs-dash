@@ -45,5 +45,47 @@ export default config({
         }),
       },
     }),
+    users: collection({
+      label: 'Users',
+      path: 'content/users/*',
+      slugField: 'username',
+
+      schema: {
+        username: fields.slug({
+          name: {
+            label: 'Username',
+          },
+        }),
+
+        name: fields.text({
+          label: 'Name',
+          validation: {
+            isRequired: true,
+          },
+        }),
+
+        // passwordHash: fields.text({
+        //   label: 'Password hash',
+        //   validation: {
+        //     isRequired: true,
+        //   },
+        // }),
+
+        role: fields.select({
+          label: 'Role',
+          options: [
+            { label: 'Admin', value: 'admin' },
+            { label: 'Editor', value: 'editor' },
+            { label: 'Viewer', value: 'viewer' },
+          ],
+          defaultValue: 'viewer',
+        }),
+
+        active: fields.checkbox({
+          label: 'Active',
+          defaultValue: true,
+        }),
+      },
+    }),
   },
 });

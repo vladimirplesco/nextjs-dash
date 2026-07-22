@@ -1,0 +1,5 @@
+username: editor1
+name: Редактор 1
+passwordHash: $2b$12$TuPXF1tjydH/4ga9MxBQ.uMX/AV7hCczL/1Meca/EYoDEuuGHxDKW
+role: editor
+active: true
