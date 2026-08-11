@@ -1,24 +1,43 @@
-import fs from "fs/promises";
-import path from "path";
 import bcrypt from "bcryptjs";
-// import { parse } from "yaml";
-import { parse, stringify} from "yaml";
+import { USER_ROLES} from "./constants";
+import { canCreateRole } from "@/lib/auth/permissions";
+import { canUpdateUser } from "@/lib/auth/permissions";
+import { canDeleteUser } from "@/lib/auth/permissions";
+import {
+  saveUser,
+  loadUser,
+  deleteUser as deleteUserFromStorage,
+  getUsers as getUsersFromStorage,
+  isValidUsername,
+} from "./storage/usersStorage";
+import {
+  getUserFromGithub,
+  getUsersFromGithub,
+  saveUserToGithub,
+  deleteUserFromGithub,
+} from "./storage/githubUsersStorage";
 
-// ---------------------------------------------------------------------
-// Константы
-// ---------------------------------------------------------------------
-const USERS_DIR = path.join(process.cwd(), "content", "users");
+const USE_GITHUB_USERS = true;
 
 // ---------------------------------------------------------------------
 // Внутренние функции
 // ---------------------------------------------------------------------
+async function saveUserToStorage(user) {
+  if (USE_GITHUB_USERS) {
+    return await saveUserToGithub(user);
+  }
 
-/**
- * Проверяет корректность имени пользователя.
- */
-function isValidUsername(username) {
-  return /^[a-zA-Z0-9_-]+$/.test(username);
+  return await saveUser(user);
 }
+
+async function deleteUserFromSelectedStorage(username) {
+  if (USE_GITHUB_USERS) {
+    return await deleteUserFromGithub(username);
+  }
+
+  return await deleteUserFromStorage(username);
+}
+
 /**
  * Хеширует пароль.
  */
@@ -31,53 +50,13 @@ async function hashPassword(password) {
 async function checkPassword(password, passwordHash) {
   return bcrypt.compare(password, passwordHash);
 }
-/**
- * Полный путь к файлу по имени пользователя
- */
-function getUserFilePath(username) {
-  if (!username) {
-    throw new Error("Username is required");
-  }
-  return path.join(
-    USERS_DIR,
-    `${username}.yaml`
-  );
-}
-/**
- * Сохраняет пользователя в YAML.
- */
-async function saveUser(user) {
-  const filePath = getUserFilePath(user.username);
 
-  await fs.writeFile(
-    filePath,
-    stringify(user),
-    "utf8"
-  );
-}
-/**
- * Возвращает пользователя по username.
- */
-// export async function getUser(username) {
-async function loadUser(username) {
-  if(!isValidUsername(username)) {
-    return null;
-  }
 
-  // const filePath = path.join(USERS_DIR, `${username}.yaml`);
-  const filePath = getUserFilePath(username);
-  try {
-    const file = await fs.readFile(filePath, "utf8");
-    return parse(file);
-  } catch {
-    return null;
-  }
-}
 /**
  * Возвращает существующего пользователя по username.
  */
 async function loadExistingUser(username) {
-  const user = await loadUser(username);
+  const user = await getUser(username);
 
   if (!user) {
     throw new Error("User not found");
@@ -103,62 +82,70 @@ function toPublicUser(user) {
 // ---------------------------------------------------------------------
 
 /**
+ * Возвращает пользователя для экспорта.
+ */
+export async function getUser(username) {
+  if (USE_GITHUB_USERS) {
+    const user = await getUserFromGithub(username);
+    console.log("USER FROM GITHUB:", user)
+    return user;
+  }
+  return loadUser(username);
+}
+
+/**
  * Возвращает список всех пользователей.
  */
 export async function getUsers() {
-  const files = await fs.readdir(USERS_DIR);
+  const users = USE_GITHUB_USERS
+    ? await getUsersFromGithub()
+    : await getUsersFromStorage();
 
-  const users = [];
-
-  for (const file of files) {
-    if (!file.endsWith(".yaml")) {
-      continue;
-    }
-
-    // const username = file.replace(".yaml", "");
-    const username = path.parse(file).name;
-
-    const user = await loadUser(username);
-
-    if (!user) {
-      continue;
-    }
-
-    // users.push({
-    //   username: user.username,
-    //   name: user.name,
-    //   role: user.role,
-    //   active: user.active,
-    // });
-    users.push(toPublicUse(user));
-  }
-
-  // return users;
-  return users.sort((a,b) =>
-    a.username.localeCompare(b.username)
-  );
+  return users
+    .map(toPublicUser)
+    .sort((a, b) =>
+      a.username.localeCompare(b.username)
+    );
 }
 /**
  * Создаёт нового пользователя.
  */
-export async function createUser({
+export async function createUser(
+  actor,
+  {
   username,
   name,
   password,
   role = "viewer",
   active = true,
 }) {
+
+  if (!canCreateRole(actor, role)) {
+    throw new Error(
+      "Недостаточно прав для создания такой роли"
+    );
+  }
+
+  username = username.trim().toLowerCase();
   if (!isValidUsername(username)) {
     throw new Error("Invalid username");
   }
 
-  const existingUser = await loadUser(username);
-
-  if (existingUser) {
-    throw new Error("User already exists");
+  name = name.trim();
+  if (!name) {
+    throw new Error("Name is required");
   }
 
-  // const passwordHash = await bcrypt.hash(password, 12);
+  if (!Object.values(USER_ROLES).includes(role)) {
+    throw new Error("Invalid role");
+  }
+
+  const existingUser = await getUser(username);
+
+  if (existingUser) {
+    throw new Error("Пользователь с таким username уже существует");
+  }
+
   const passwordHash = await hashPassword(password);
   const user = {
     username,
@@ -168,69 +155,59 @@ export async function createUser({
     active,
   };
 
-  // const filePath = path.join(
-  //   USERS_DIR,
-  //   `${username}.yaml`
-  // );
-  // const filePath = getUserFilePath(username);
-
-  // await fs.writeFile(
-  //   filePath,
-  //   stringify(user),
-  //   "utf8"
-  // );
-
-  await saveUser(user);
-
-  // return user;
+  await saveUserToStorage(user);
   return toPublicUser(user);
 }
 /**
  * Обновляет данные пользователя.
  */
-export async function updateUser(username, updates) {
-  // const user = await loadUser(username);
-
-  // if (!user) {
-  //   throw new Error('User not found');
-  // }
+export async function updateUser(
+  actor,
+  username,
+  updates
+) {
 
   const user = await loadExistingUser(username);
 
-  if (
-    updates.name != undefined
-  ) {
-    user.name = updates.name;
+  if (!canUpdateUser(actor, user, updates)) {
+    throw new Error(
+      "Недостаточно прав для изменения пользователя"
+    );
   }
 
   if (
-    updates.role != undefined
+    updates.name !== undefined
+  ) {
+    const name = updates.name;
+    if (!name) {
+      throw new Error("Name is required");
+    }
+
+    user.name = name;
+  }
+
+  if (
+    updates.role !== undefined &&
+    !Object.values(USER_ROLES).includes(updates.role)
+  ) {
+    throw new Error("Invalid role");
+  }
+
+  if (
+    updates.role !== undefined
   ) {
     user.role = updates.role;
   }
 
   if (
-    updates.active != undefined
+    updates.active !== undefined
   ) {
     user.active = updates.active;
   }
 
-  // const filePath = getUserFilePath(username);
+  // await saveUser(user);
+  await saveUserToStorage(user);
 
-  // await fs.writeFile(
-  //   filePath,
-  //   stringify(user),
-  //   "utf8"
-  // )
-
-  await saveUser(user);
-
-  // return {
-  //   username: user.username,
-  //   name: user.name,
-  //   role: user.role,
-  //   active: user.active,
-  // }
   return toPublicUser(user);
 
 }
@@ -251,43 +228,40 @@ export async function verifyPassword(username, password) {
     password,
     user.passwordHash
   );
-  return ok ? user : null;
+  return ok ? toPublicUser(user) : null;
 
 }
 /**
  * Меняет пароль пользователя.
  */
 export async function changePassword(username, newPassword) {
-  // const user = await loadUser(username);
-
-  // if (!user) {
-  //   throw new Error("User not found");
-  // }
 
   const user = await loadExistingUser(username);
 
-  // user.passwordHash = await bcript.hash(newPassword, 12);
-  user.passwordHash = await hashPassword(newPassword);
-  // const filePath = path.join(
-  //   USERS_DIR,
-  //   `${username}.yaml`
-  // );
-  // const filePath = getUserFilePath(username);
+  if (!newPassword || newPassword.length < 6) {
+    throw new Error("Invalid password");
+  }
 
-  // await fs.writeFile(
-  //   filePath,
-  //   stringify(user),
-  //   "utf8"
-  // );
+  user.passwordHash = await hashPassword(newPassword);
 
   await saveUser(user);
 
-  // return {
-  //   username: user.username,
-  //   name: user.name,
-  //   role: user.role,
-  //   active: user.active,
-  // }
   return toPublicUser(user);
+
+}
+/**
+ * Удаляет пользователя.
+//  */
+export async function deleteUser(actor, username) {
+
+  const user = await loadExistingUser(username);
+
+  if (!canDeleteUser(actor, user)) {
+    throw new Error(
+      "Недостаточно прав для удаления пользователя"
+    );
+  }
+
+  await deleteUserFromSelectedStorage(username);
 
 }

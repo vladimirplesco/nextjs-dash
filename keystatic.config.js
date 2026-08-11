@@ -4,14 +4,14 @@ import { config, collection, fields } from '@keystatic/core';
 
 export default config({
   storage: {
-    // for local
-    kind: 'local',
+    // // for local
+    // kind: 'local',
     // for Github
-    // kind: 'github',
-    // repo: {
-    //   owner: 'vladimirplesco',
-    //   name: 'nextjs-dash',
-    // },
+    kind: 'github',
+    repo: {
+      owner: 'vladimirplesco',
+      name: 'nextjs-dash',
+    },
   },
 
   collections: {

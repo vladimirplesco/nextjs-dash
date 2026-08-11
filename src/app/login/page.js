@@ -2,6 +2,7 @@
 
 import { signIn } from "next-auth/react";
 import { useState } from "react";
+// import { auth } from "../../auth";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
@@ -22,7 +23,8 @@ export default function LoginPage() {
       return;
     }
 
-    window.location.href = "/keystatic"
+    // window.location.href = "/keystatic"
+    window.location.href = "/after-login";
   }
 
   return (
@@ -41,9 +43,9 @@ export default function LoginPage() {
                 type="text"
                 className="input input-bordered w-full"
                 placeholder="Имя пользователя"
+                autoComplete="new-password"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                autoComplete="username"
                 autoFocus
               />
 
@@ -55,7 +57,7 @@ export default function LoginPage() {
                 placeholder="Пароль"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                autoComplete="current-password"
+                autoComplete="new-password"
               />
 
               {error && (

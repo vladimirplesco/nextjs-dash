@@ -1,7 +1,8 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import KeystaticApp from "./keystatic";
-
+// import { USER_ROLES } from "@/lib/auth/constants";
+import { canAccessKeystatic } from "@/lib/auth/permissions";
 export default async function Layout({ children }) {
   const session = await auth();
 
@@ -9,9 +10,11 @@ export default async function Layout({ children }) {
     redirect("/login");
   }
 
-  const allowedRoles = ["admin", "editor"];
+  // const allowedRoles = ["superadmin", "admin", "editor"];
   // if (session.user.role !== "admin" && session.user.role !== "editor") {
-  if (!allowedRoles.includes(session.user.role)) {
+  // if (!allowedRoles.includes(session.user.role)) {
+  // if (!Object.values(USER_ROLES).slice(0, 3).includes(session.user.role)) {
+  if (!canAccessKeystatic(session.user)) {
     return (
       <main>
         <h1>Access denied</h1>

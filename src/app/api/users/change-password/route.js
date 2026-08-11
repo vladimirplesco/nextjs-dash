@@ -8,7 +8,7 @@ export async function POST(request) {
     await changePassword(username, password);
 
     return NextResponse.json({
-      sussess: true,
+      success: true,
     });
 
   } catch (error) {
