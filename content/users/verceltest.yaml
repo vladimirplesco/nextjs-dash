@@ -1,0 +1,5 @@
+username: verceltest
+name: Vercel Test
+passwordHash: $2b$12$XCOi5Pty.bdUL8qFfMTA/eROhDixmQ9bIErYl/vfs9CdsNTmDx.AO
+role: editor
+active: true
