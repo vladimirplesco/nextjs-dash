@@ -5,7 +5,6 @@ import KeystaticApp from "./keystatic";
 import { canAccessKeystatic } from "@/lib/auth/permissions";
 export default async function Layout({ children }) {
   const session = await auth();
-
   if (!session) {
     redirect("/login");
   }

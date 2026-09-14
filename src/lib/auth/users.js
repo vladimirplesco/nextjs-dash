@@ -17,7 +17,7 @@ import {
   deleteUserFromGithub,
 } from "./storage/githubUsersStorage";
 
-const USE_GITHUB_USERS = true;
+const USE_GITHUB_USERS = false;
 
 // ---------------------------------------------------------------------
 // Внутренние функции

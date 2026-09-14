@@ -16,7 +16,7 @@ export async function GET() {
       ? fs.readdirSync(dir)
       : [];
 
-    console.log('cwd:', process.cwd());
+    // console.log('cwd:', process.cwd());
     const reader = createReader(process.cwd(), config);
     const entries = await reader.collections.people.all();
 

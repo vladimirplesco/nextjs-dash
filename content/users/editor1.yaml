@@ -1,5 +1,5 @@
 username: editor1
-name: Редактор 1
+name: Редактор  после добавления
 passwordHash: $2b$12$TuPXF1tjydH/4ga9MxBQ.uMX/AV7hCczL/1Meca/EYoDEuuGHxDKW
-role: editor
+role: admin
 active: true

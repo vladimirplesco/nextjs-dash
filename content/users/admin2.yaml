@@ -1,0 +1,5 @@
+username: admin2
+name: Admin2
+passwordHash: $2b$12$G8IZlqJ08QyKsVqo3E9D/ediJMeyOKrjamMvwqIPSu/0MI2Yppqnm
+role: admin
+active: true

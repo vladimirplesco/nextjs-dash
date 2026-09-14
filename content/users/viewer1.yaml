@@ -1,0 +1,5 @@
+username: viewer1
+name: Viewer1
+passwordHash: $2b$12$dMxbc1wViXNti.Kp4AuWde/9S9RExHfFLdmB3zlxOvKzmTy5jeI/C
+role: viewer
+active: true
