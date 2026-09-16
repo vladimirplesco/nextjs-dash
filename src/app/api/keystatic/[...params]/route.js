@@ -25,7 +25,7 @@ globalThis.fetch = async (...args) => {
     const requestUrl =
       typeof request === 'string' ? request : request?.url;
 
-    if (requestUrl === 'https://github.com/login/oauth/access_token') {
+    if (requestUrl?.startsWith('https://github.com/login/oauth/access_token')) {
       const clone = response.clone();
 
       let data = null;
