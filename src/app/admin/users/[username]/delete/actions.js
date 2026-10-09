@@ -4,8 +4,6 @@ import { deleteUser } from "@/lib/auth/users";
 import { redirect } from "next/navigation";
 
 export async function deleteUserAction(username) {
-  // console.log("deleteUserActions");
-
   const session = await auth();
 
   if (!session) {

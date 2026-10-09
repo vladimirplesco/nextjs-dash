@@ -5,7 +5,6 @@ import { USER_ROLES} from "@/lib/auth/constants";
 export default async function AfterLoginPage()
  {
   const session = await auth();
-  // console.log("SESSION =", session);
   if(!session) {
     redirect("/login");
   }

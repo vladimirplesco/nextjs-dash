@@ -5,12 +5,10 @@ export function FamilyList() {
   const [people, setPeople] = useState([]);
   const [filter, setFilter] = useState('all');
 
-  // console.log('PEOPLE:', people);
   useEffect(() => {
     fetch('/api/family')
     .then(res => res.json())
     .then(data => {
-      // console.log('CHILDREN:', JSON.stringify(data.children, null, 2));
       setPeople(
         data.children.toSorted(
           (a, b) => Number(a.id) - Number(b.id)
@@ -30,29 +28,11 @@ export function FamilyList() {
     return birthday;
   };
 
-  console.log(
-    `BIRTHDAYS:`,
-    people.map(person => (
-      {
-        name: person.name,
-        birthday: getBirthdayThisYear(person.date),
-      }
-    ))
-  );
-
   const getBirthdayKey = (date) => {
     const [day, month] = date.split('.');
 
     return `${month}-${day}`;
   }
-
-  console.log(
-    `BIRTHDAY KEYS:`,
-    people.map(person => ({
-      name: person.name,
-      key: getBirthdayKey(person.date),
-    }))
-  );
 
   const formatBirthdayKey = (key) =>{
     const [month, day] = key.split('-');
@@ -101,14 +81,6 @@ export function FamilyList() {
     return birthdayYear - Number(year);
   }
 
-  console.log(
-    'AGES:',
-    people.map(person => ({
-      name: person.name,
-      age: getAgeOnBirthday(person.date),
-    }))
-  );
-
   const getAgeThisYear = (dateString) => {
     const [, , birthYear] = dateString.split('.').map(Number);
 
@@ -134,11 +106,6 @@ export function FamilyList() {
     return 'лет';
   }
 
-  console.log(
-    [1, 2, 4, 5, 11, 12, 14, 20, 21, 22, 24, 25, 31, 32, 35]
-    .map(age => `${age} ${getAgeWord(age)}`)
-  );
-
   const getDaysWord = (days) => {
     const lastTwo = days % 100;
     const lastOne = days % 10;
@@ -158,11 +125,6 @@ export function FamilyList() {
     return 'дней';
   };
 
-  console.log(
-    [1, 2, 4, 5, 11, 12, 14, 20, 21, 22, 24, 25, 31, 32, 35]
-    .map(day => `${day} ${getDaysWord(day)}`)
-  );
-
   const getPeopleWord = (count) => {
     const lastTwo = count%100;
     const lastOne = count%10;
@@ -181,11 +143,6 @@ export function FamilyList() {
 
     return 'человек';
   };
-
-  console.log(
-  [1, 2, 4, 5, 11, 12, 14, 20, 21, 22, 24, 25, 31, 32, 35]
-    .map(count => `${count} ${getPeopleWord(count)}`)
-);
 
   const getDaysUntilBirthday = (date) => {
 
@@ -217,17 +174,6 @@ export function FamilyList() {
     return diff / (1000 * 60 * 60 * 24);
   }
 
-  console.log(
-    `DAYS UNTIL:`,
-    people.map(person => (
-      {
-        name: person.name,
-        date: person.date,
-        birthday: getDaysUntilBirthday(person.date),
-      }
-    ))
-  );
-
   const filteredPeople = people.filter(person => {
     const days = getDaysUntilBirthday(person.date);
     if (filter === 'today') {
@@ -254,8 +200,6 @@ export function FamilyList() {
 
     return true;
   })
-
-  console.log(`FILTERED:`, filter, filteredPeople);
 
   const countToday = people.filter(
     person => getDaysUntilBirthday(person.date) === 0
@@ -297,8 +241,6 @@ export function FamilyList() {
     return groups;
   }, {});
 
-  console.log('GROUPED:', groupedPeople);
-
   const sortedGroups = Object.entries(groupedPeople).sort(
     ([keyA], [keyB]) => {
       const personA = groupedPeople[keyA][0];
@@ -317,17 +259,6 @@ export function FamilyList() {
       );
 
     }
-  );
-
-  console.log(
-    'FILTER TEST:',
-    people.map(
-      person => ({
-        name: person.name,
-        days: getDaysUntilBirthday(person.date),
-        in30days: getDaysUntilBirthday(person.date) <= 30,
-      })
-    )
   );
 
   return (
@@ -379,25 +310,6 @@ export function FamilyList() {
 
       </div>
     <ul>
-      {/* {people.map(person => ( */}
-      {/* {filteredPeople.map(person => ( */}
-      {/* {sortedPeople.map(person => (
-        <li   className="flex justify-between gap-5 py-4 border-b border-gray-600"key={person.id}>
-          <span>{person.name}</span>
-          <span className="text-right">
-            <span>({person.date})</span>
-
-            <span className="block text-sm text-gray-400">
-              {daysUntil === 0
-                ? '🎂 Сегодня'
-                : 'через ' + daysUntil + ' ' + getDaysWord(daysUntil)
-              }
-
-            </span>
-          </span>
-        </li>
-      ))} */}
-      {/* {Object.entries(groupedPeople).map(([key, group]) => ( */}
       {sortedGroups.map(([key, group]) => {
         const daysUntil = getDaysUntilBirthday(group[0].date);
         const ageOnBirthday = getAgeThisYear(group[0].date);
@@ -432,7 +344,6 @@ export function FamilyList() {
 
           </div>
           {group.map(person => {
-            // const age = getAgeOnBirthday(person.date);
             const age =
               filter === 'month' && daysUntil > 30
                 ? getAgeThisYear(person.date)
@@ -442,15 +353,8 @@ export function FamilyList() {
               <Fragment key={person.id}>
                 <div className="pl-4 py-2">
                   <div>{person.name}</div>
-                  {/* <div className="text-sm text-gray-400">
-                    {filter === 'month' && daysUntil > 30
-                      ? 'В этом году исполнилось ' + age + ' ' + getAgeWord(age)
-                      : 'исполняется ' + age + ' ' + getAgeWord(age)
-                    }
-                  </div> */}
                   {!(filter === 'month' && daysUntil > 30) && (
                     <div className="text-sm text-gray-400">
-                      {/* {'исполняется ' + age + ' ' + getAgeWord(age)} */}
                       {daysUntil === 0
                         ? 'Исполняется ' + age + ' ' + getAgeWord(age)
                         : 'Исполнится ' + age + ' ' + getAgeWord(age)

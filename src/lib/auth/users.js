@@ -87,7 +87,6 @@ function toPublicUser(user) {
 export async function getUser(username) {
   if (USE_GITHUB_USERS) {
     const user = await getUserFromGithub(username);
-    console.log("USER FROM GITHUB:", user)
     return user;
   }
   return loadUser(username);

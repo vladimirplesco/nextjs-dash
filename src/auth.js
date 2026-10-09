@@ -10,18 +10,12 @@ export const { handlers, signIn, signOut, auth } =NextAuth({
   providers: [
     Credentials({
       async authorize(credentials) {
-        console.log("authorize() вызвана");
-        // сюда позже подключим verifyPassword()
         if (
           typeof credentials?.username !== "string" ||
           typeof credentials?.password !== "string"
         ) {
           return null;
         }
-        // return veryfyPassword(
-        //   credentials.username,
-        //   credentials.password
-        // );
         const user = await verifyPassword(
           credentials.username,
           credentials.password

@@ -1,0 +1,11 @@
+services:
+  nextjs-dash:
+    build: .
+    container_name: nextjs-dash
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    volumes:
+      - ./content:/app/content

@@ -93,12 +93,9 @@ export async function saveUserToGithub(user) {
 
   if (data === null) {
     // файла нет
-    console.log("MODE: CREATE");
     url = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/content/users/${user.username}.yaml`;
   } else {
     // файл существует
-    console.log("MODE: UPDATE");
-
     sha = data?.sha;
     url = data?.url;
   }
@@ -129,8 +126,6 @@ export async function saveUserToGithub(user) {
     },
     body: JSON.stringify(body),
   });
-
-  console.log("Github PUT status:",response.status);
 
   if (!response.ok) {
     throw new Error(
